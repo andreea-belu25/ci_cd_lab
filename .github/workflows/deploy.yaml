@@ -6,6 +6,41 @@ on:
       - main
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: go test ./...
+
+  compile:
+    needs: test   # 👈 ensures test runs first
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Compile binary
+        run: go build -o myapp
+
   build:
     # Specify the OS for the runner
     runs-on: ubuntu-latest
@@ -40,8 +75,8 @@ jobs:
 
       # Step 4: Build the Docker image and tag it with the repository name and 'latest'
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository }}:latest .
+        run: docker build -t ghcr.io/${{ andreea-belu25/ci_cd_lab }}:latest .
 
       # Step 5: Push the Docker image to GitHub Container Registry
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository }}:latest
+        run: docker push ghcr.io/${{ andreea-belu25/ci_cd_lab }}:latest
